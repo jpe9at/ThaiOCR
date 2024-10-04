@@ -33,7 +33,7 @@ resolution = args.resolution
 style = args.style
 image_specifics = resolution + '/' + st
 #Allow the sets to be constrained by choice of language (Thai, English, or both). 
-df = create_dataframe(directory_path, image_specifi
+df = create_dataframe(directory_path, image_specifics)
 
 if args.add_language is not None:
     directory_path_2 = folder + '/' + args.add_language
