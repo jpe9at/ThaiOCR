@@ -10,6 +10,7 @@ from CNNclassifier import CNNThai
 from Trainer import Trainer
 from CustomDataClass import create_dataframe, DataModule
 import matplotlib.pyplot as plt
+import pickle 
 
 # Set the environment variable to make only GPU 0 visible
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -22,9 +23,16 @@ parser.add_argument("language", type=str, help="Determine Langauge")
 parser.add_argument("resolution", type=str, help="Set resolution")
 parser.add_argument("style", type=str, help="Set style")
 parser.add_argument("--add_language", type=str, help="Determine additional Langauge")
+parser.add_argument("--hyper", help="Use Hyperparameter optimization", action="store_true" )
+
 #parser.add_argument("device",  type=str, help="Determine GPU")
 
 args = parser.parse_args()
+
+hyperparameter_optimization = args.hyper
+if hyperparameter_optimization == True:
+  print("Hyperparameter optimization:", hyperparameter_optimization)
+
 folder = args.directory
 language = args.language
 directory_path = folder + '/' + language
@@ -58,11 +66,28 @@ test_data = DataModule(test_df.images, test_df.labels.replace(label_dictionary))
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_of_labels = len(label_dictionary)
-cnn_model = CNNThai(output_size=num_of_labels).to(device)
-trainer = Trainer(max_epochs = 4, batch_size = 16)
 
+if hyperparameter_optimization == True:
+    print('Hyperparameter Optimization Loop')
+    best_params, best_accuracy = Trainer.hyperparameter_optimization(train_data, val_data,  num_of_labels, n_trials = 20)
+    cnn_model= CNNThai(best_params['hidden_size'], num_of_labels, optimizer = best_params['optimizer'], learning_rate = best_params['learning_rate'])
+    trainer = Trainer(50, best_params['batch_size'], early_stopping_patience = 7)
+    trainer.fit(cnn_model, train_data, val_data)
 
-trainer.fit(cnn_model,train_data,val_data)
+    torch.save({
+        'state_dict': cnn_model.state_dict(),
+        'hidden_size':best_params['hidden_size'],
+        'learning_rate': best_params['learning_rate'], 
+        'l2_rate': best_params['l2_rate'],
+        'optimizer': best_params['optimizer']}, 'cnn_state_and_attributes.pth')
+
+    # Serialize with pickle
+    with open('CNNThaiClassifier.pkl', 'wb') as f:
+        pickle.dump(cnn_model, f)
+else: 
+    cnn_model = CNNThai(output_size=num_of_labels).to(device)
+    trainer = Trainer(max_epochs = 4, batch_size = 16)
+    trainer.fit(cnn_model,train_data,val_data)
 
 n_epochs = range(trainer.max_epochs)
 train_loss = trainer.train_loss_values
