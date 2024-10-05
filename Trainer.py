@@ -64,9 +64,12 @@ class Trainer:
     def fit_epoch(self):
         train_loss = 0.0
         for x_batch, y_batch in self.train_dataloader:
+            print('allocated_device')
+            print(self.model.device)
             x_batch = x_batch.to(self.model.device)
             y_batch = y_batch.to(self.model.device)
             output = self.model(x_batch)
+            print(output.device)
             loss = self.model.loss(output, y_batch)
             self.model.optimizer.zero_grad()
             loss.backward()

@@ -62,6 +62,7 @@ test_data = DataModule(test_df.images, test_df.labels.replace(label_dictionary))
 #################################################################
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(device)
 num_of_labels = len(label_dictionary)
 
 #Train the model with an option of hyperparameter optimization
