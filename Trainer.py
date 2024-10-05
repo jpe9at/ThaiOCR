@@ -106,8 +106,8 @@ class Trainer:
                 y_hat = torch.argmax(model(X_batch), dim=1)  # Choose the class with highest logits
                 y_pred.append(y_hat)
                 y.append(y_batch)
-        y_pred = torch.cat(y_pred, dim=0)
-        y = torch.cat(y, dim=0)
+        y_pred = torch.cat(y_pred, dim=0).cpu()
+        y = torch.cat(y, dim=0).cpu()
 
         precision = precision_score(y, y_pred, average='macro')  # or 'micro', 'weighted'
         recall = recall_score(y, y_pred, average='macro')        # or 'micro', 'weighted'
