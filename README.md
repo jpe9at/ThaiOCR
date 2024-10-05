@@ -1,16 +1,16 @@
 usage: main.py [-h] [--resolution RESOLUTION] [--style STYLE] [--add_language ADD_LANGUAGE] [--hyper] [--cuda_device CUDA_DEVICE] directory language
       
-      Parameter options: 
+Parameter options: 
       
-                --directory: the directory of the dataset
+      --directory: the directory of the dataset
                 
-                --resolution: 200, 300, 400
+      --resolution: 200, 300, 400
                 
-                --style: normal, bold, italic, bold_italic
+      --style: normal, bold, italic, bold_italic
                 
-                --cuda_device: select GPU name. 
+      --cuda_device: select GPU name. 
                 
-                  If cuda_device is called, only the specified GPU will be visible to pytorch. 
+      If cuda_device is called, only the specified GPU will be visible to pytorch. 
                 
 usage: experiments.py [-h]  [--cuda_device CUDA_DEVICE] directory 
      
