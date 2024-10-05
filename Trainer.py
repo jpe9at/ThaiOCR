@@ -8,7 +8,7 @@ from CNNclassifier import CNNThai
 
 class Trainer: 
     """The base class for training models with data."""
-    def __init__(self, max_epochs = 30, batch_size = 8, early_stopping_patience=6, min_delta = 0.0007):
+    def __init__(self, max_epochs = 30, batch_size = 8, early_stopping_patience=6, min_delta = 0.007):
         self.max_epochs = max_epochs
         self.batch_size = batch_size
         self.early_stopping_patience = early_stopping_patience
@@ -64,12 +64,8 @@ class Trainer:
     def fit_epoch(self):
         train_loss = 0.0
         for x_batch, y_batch in self.train_dataloader:
-            print('allocated_device')
-            print(next(self.model.parameters()).device)
-            #x_batch = x_batch.to(self.model.device)
             y_batch = y_batch.to(next(self.model.parameters()).device)
             output = self.model(x_batch)
-            print(output.device)
             loss = self.model.loss(output, y_batch)
             self.model.optimizer.zero_grad()
             loss.backward()

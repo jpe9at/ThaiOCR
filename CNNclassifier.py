@@ -9,7 +9,7 @@ class CNNThai(nn.Module):
         
         
         # Define convolutional layers
-        # One imput channel, because we are dealing with graysacle images
+        # One imput channel, because the images are graysacle
         self.conv1 = nn.Conv2d(1, 16, kernel_size=3, stride=1, padding=1)
         self.relu1 = nn.ReLU()
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
@@ -23,12 +23,15 @@ class CNNThai(nn.Module):
         self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2)
 
         # Define fully connected layers
-        # intial (40,40) has been halved twice by two pooling layers
+        # intial (40,40) dimension of the images has been halved twice by two pooling layers. 
+        # resulting in a final 5x5 frame  
         self.fc1 = nn.Linear(64 * 5 * 5, hidden_size)
         self.relu4 = nn.ReLU()
         self.fc2 = nn.Linear(hidden_size, output_size)
         self.log_softmax = nn.LogSoftmax(dim=1)
-
+        
+        #different weight initialisations can be chosen for each of the layers. 
+        #Here we are going with the Default initialisation. 
         self._init_weights = 'Default'
 
         # Initialize optimizer, loss function, and other parameters
@@ -46,6 +49,7 @@ class CNNThai(nn.Module):
     
     def forward(self, x):
         # Forward pass through the convolutional layers
+        #Allocate the tensors to the specified device
         x = x.to(next(self.parameters()).device)
         x = self.conv1(x)
         x = self.relu1(x)

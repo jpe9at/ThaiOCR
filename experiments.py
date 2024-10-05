@@ -14,11 +14,10 @@ import argparse
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
+
 parser = argparse.ArgumentParser(description="Iterate through a directory and list files and folders.")
 parser.add_argument("directory", type=str, help="Path to the directory")
 parser.add_argument('--cuda_device', type=int, default=0, help='Specify the CUDA device number (default: 0)')
-
-
 
 
 args = parser.parse_args()
@@ -37,7 +36,8 @@ Experiments =[[['Thai', 'normal', '200'],['Thai','normal','200']],
 
 
 ################################################################
-#The following three functions are used to create the corresponding datasets for the experiments
+#The following three functions are used to create the 
+#corresponding datasets for the experiments
 ################################################################
 
 def create_lists(experiment):
@@ -67,9 +67,9 @@ def get_datasets(experiment):
         val_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=42)
 
         label_dictionary = create_label_dictionary(train_df.labels)
-        train_data = DataModule(train_df.images, train_df.labels.replace(label_dictionary))
-        val_data = DataModule(val_df.images, val_df.labels.replace(label_dictionary))
-        test_data = DataModule(test_df.images, test_df.labels.replace(label_dictionary))
+        train_data = DataModule(train_df.images, train_df.labels.map(label_dictionary))
+        val_data = DataModule(val_df.images, val_df.labels.map(label_dictionary))
+        test_data = DataModule(test_df.images, test_df.labels.map(label_dictionary))
 
     else:
         training_set = create_lists(experiment[0])
@@ -80,9 +80,9 @@ def get_datasets(experiment):
         test_df = test_set.sample(frac=1).reset_index(drop=True)
         
         label_dictionary = create_label_dictionary(train_df.labels)
-        train_data = DataModule(train_df.images, train_df.labels.replace(label_dictionary))
-        val_data = DataModule(val_df.images, val_df.labels.replace(label_dictionary))
-        test_data = DataModule(test_df.images, test_df.labels.replace(label_dictionary))
+        train_data = DataModule(train_df.images, train_df.labels.map(label_dictionary))
+        val_data = DataModule(val_df.images, val_df.labels.map(label_dictionary))
+        test_data = DataModule(test_df.images, test_df.labels.map(label_dictionary))
     
     return train_data, val_data, test_data, label_dictionary
 
@@ -114,8 +114,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 ######################################################################
-#Iterate through the list of experiments, train and test the model on the respective sets
-#Write the results in a .txt. file
+#Iterate through the list of experiments, train and test the model 
+#on the respective sets
+#Write the results to experiments.txt
 ######################################################################
 
 total_exp = len(Experiments)
@@ -125,8 +126,8 @@ for experiment in Experiments:
     train_data, val_data, test_data, label_dictionary = get_datasets(experiment)
     num_of_labels = len(label_dictionary)
     cnn_model = CNNThai(64, num_of_labels, optimizer = 'SGD', learning_rate = 0.00338, l2 = 0.0001, scheduler = 'OnPlateau').to(device)
-    cnn_model = CNNThai(output_size=num_of_labels, learning_rate = 0.003388, ).to(device)
-    trainer = Trainer(max_epochs = 1, batch_size = 16)
+    print(next(cnn_model.parameters()).device)
+    trainer = Trainer(max_epochs = 40, batch_size = 16)
     trainer.fit(cnn_model,train_data,val_data)
     #plot_progress(trainer)
     #plt.show()

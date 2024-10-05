@@ -12,22 +12,29 @@ from CustomDataClass import create_dataframe, create_label_dictionary, DataModul
 import matplotlib.pyplot as plt
 import pickle
 
-
-# Set the environment variable to make the specified GPU visible
-
+#################################################################  
+#Select the traing, validation and testing data
+#Determine the GPU
+###################################################################
 parser = argparse.ArgumentParser(description="Iterate through a directory and list files and folders and train a CNN on the image data.")
 
+#path to the data and selection of langauge
 parser.add_argument("directory", type=str, help="Path to the directory")
 parser.add_argument("language", type=str, help="Determine Langauge")
+
+#specify style and resolution of the images
 parser.add_argument("--resolution", type=str, default = '200', help="Set resolution")
 parser.add_argument("--style", type=str, default = 'normal', help="Set style")
+#add an additional language to the one specified
 parser.add_argument("--add_language", type=str, help="Determine additional Langauge")
+
+#Choose to select the hyperparameter optimization loop 
 parser.add_argument("--hyper", help="Use Hyperparameter optimization", action="store_true" )
+
+# Set the environment variable to make the specified GPU visible
 parser.add_argument('--cuda_device', type=int, default=0, help='Specify the CUDA device number (default: 0)')
 
-
 args = parser.parse_args()
-
 
 os.environ['CUDA_VISIBLE_DEVICES'] = str(args.cuda_device)
 
@@ -35,6 +42,9 @@ hyperparameter_optimization = args.hyper
 if hyperparameter_optimization == True:
   print("Hyperparameter optimization:", hyperparameter_optimization)
 
+
+#################################################################  
+#Ceate a dataset object of the training, validation, and testing data
 #################################################################  
 folder = args.directory
 language = args.language
@@ -44,25 +54,29 @@ resolution = args.resolution
 style = args.style
 image_specifics = resolution + '/' + style
 
-#Allow the sets to be constrained by choice of language (Thai, English, or both). 
 df = create_dataframe(directory_path, image_specifics)
 
+#Add another language if specified.
 if args.add_language is not None:
     directory_path_2 = folder + '/' + args.add_language
     df2 = create_dataframe(directory_path_2, image_specifics)
     df = pd.concat([df, df2], axis=0, ignore_index=True)
 
+#create the training, validation, and test sets
 train_df, temp_df = train_test_split(df, test_size=0.4, random_state=42)
 val_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=42)
 
 label_dictionary = create_label_dictionary(train_df.labels)
-train_data = DataModule(train_df.images, train_df.labels.replace(label_dictionary))
-val_data = DataModule(val_df.images, val_df.labels.replace(label_dictionary))
-test_data = DataModule(test_df.images, test_df.labels.replace(label_dictionary))
+train_data = DataModule(train_df.images, train_df.labels.map(label_dictionary))
+val_data = DataModule(val_df.images, val_df.labels.map(label_dictionary))
+test_data = DataModule(test_df.images, test_df.labels.map(label_dictionary))
+
+
 #################################################################
+#Train the model
+#################################################################  
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(device)
 num_of_labels = len(label_dictionary)
 
 #Train the model with an option of hyperparameter optimization
@@ -98,7 +112,9 @@ plt.legend()
 #################################################################
 
 #################################################################
-#Test the model
+#Test the model and save it
+#################################################################  
+
 trainer.test(cnn_model, test_data)
 
 torch.save(cnn_model.state_dict(), 'model_parameters.pth')
