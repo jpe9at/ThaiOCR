@@ -4,9 +4,11 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 import optuna
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from CNNclassifier import CNNThai
+
+
 class Trainer: 
     """The base class for training models with data."""
-    def __init__(self, max_epochs = 30, batch_size = 8, early_stopping_patience=6, min_delta = 0.007):
+    def __init__(self, max_epochs = 30, batch_size = 8, early_stopping_patience=6, min_delta = 0.0007):
         self.max_epochs = max_epochs
         self.batch_size = batch_size
         self.early_stopping_patience = early_stopping_patience
@@ -98,57 +100,53 @@ class Trainer:
             for X_batch,y_batch in self.test_dataloader:
                 X_batch = X_batch.to(model.device)
                 y_batch = y_batch.to(model.device)
-                y_hat = torch.argmax(model(X_batch), dim=1)  # Choose the class with highest probability
+                y_hat = torch.argmax(model(X_batch), dim=1)  # Choose the class with highest logits
                 y_pred.append(y_hat)
                 y.append(y_batch)
         y_pred = torch.cat(y_pred, dim=0)
         y = torch.cat(y, dim=0)
-        print(y_pred)
-        print(y)
 
         precision = precision_score(y, y_pred, average='macro')  # or 'micro', 'weighted'
         recall = recall_score(y, y_pred, average='macro')        # or 'micro', 'weighted'
         f1 = f1_score(y, y_pred, average='macro')                # or 'micro', 'weighted'
         accuracy = accuracy_score(y, y_pred)
 
-        loss = self.calculate_accuracy(y_pred, y)
         
         print(f"Precision: {precision:.2f}")
         print(f"Recall: {recall:.2f}")
         print(f"F1 Score: {f1:.2f}")
         print(f"Accuracy: {accuracy:.2f}")
-        print(f"Accuracy Manual: {loss:.2f}")
         
-        return precision, recall, f1, accuracy, loss 
+        return precision, recall, f1, accuracy 
 
-    def calculate_accuracy(self,predictions, labels):
-        # Get the predicted classes by selecting the index with the highest probability
-        #predicted_classes = torch.argmax(predictions, 0)
-        # Compare predictions with ground truth
-        correct_predictions = torch.eq(predictions, labels).sum().item()
-        # Calculate accuracy
-        accuracy = correct_predictions / labels.size(0)
-    
-        return accuracy
+#    def calculate_accuracy(self,predictions, labels):
+#        # Get the predicted classes by selecting the index with the highest probability
+#        #predicted_classes = torch.argmax(predictions, 0)
+#        # Compare predictions with ground truth
+#        correct_predictions = torch.eq(predictions, labels).sum().item()
+#        # Calculate accuracy
+#        accuracy = correct_predictions / labels.size(0)
+#    
+#        return accuracy
 
     @classmethod
-    def Optuna_objective(cls, trial, train_data, val_data, output_size):
+    def Optuna_objective(cls, trial, train_data, val_data, output_size, device):
         optimizer = trial.suggest_categorical("optimizer", ["SGD", "Adam"])
         learning_r = trial.suggest_float("learning_rate", 1e-6, 1e-2)
         batch_size = trial.suggest_categorical("batch_size", [16,32,128])
-        hidden_size = trial.suggest_categorical('hidden_size',[32,64])
+        hidden_size = trial.suggest_categorical('hidden_size',[64,128])
         l2_rate = trial.suggest_categorical('l2_rate', [0.0,0.0001,0.005])
 
-        model = CNNThai(hidden_size, output_size, optimizer = optimizer, learning_rate = learning_r, l2 = l2_rate, scheduler = 'OnPlateau')
-        trainer = cls(4,  batch_size )
+        model = CNNThai(hidden_size, output_size, optimizer = optimizer, learning_rate = learning_r, l2 = l2_rate, scheduler = 'OnPlateau').to(device)
+        trainer = cls(40,  batch_size )
         trainer.fit(model, train_data, val_data)
 
         return  trainer.val_loss_values[-1]
 
     @classmethod
-    def hyperparameter_optimization(cls, train_data, val_data, output_size, n_trials = 20):
+    def hyperparameter_optimization(cls, train_data, val_data, output_size, device, n_trials = 20):
         study = optuna.create_study(direction='minimize')
-        objective_func = lambda trial: cls.Optuna_objective(trial, train_data, val_data, output_size)
+        objective_func = lambda trial: cls.Optuna_objective(trial, train_data, val_data, output_size, device)
         study.optimize(objective_func, n_trials=n_trials)
 
         best_trial = study.best_trial

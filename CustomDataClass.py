@@ -24,20 +24,22 @@ def create_dataframe(directory_path, image_specifics):
 
 
 def read_image(filepath, target_size=(40,40)):
-    # Read the image from the filepath
     img = cv2.imread(filepath)
     # Resize the image to the target size
     img = cv2.resize(img, target_size, interpolation = cv2.INTER_LINEAR)
-    # Convert image to RGB (OpenCV reads images in BGR format by default)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Convert the image to a NumPy array and normalize the pixel values
     img_np = np.array(img, dtype = np.float32) / 255
-    # Rearrange the dimensions to (channels, height, width)
+    # Expand the dimensions, because grayscale has only one channel
     img_np = np.expand_dims(img_np, axis=0)
     return img_np
 
-#create multiple dataframes and then merge them. 
-
+def create_label_dictionary(frame):
+    dictionary = {}
+    for entry in frame:
+        if entry not in dictionary:
+            dictionary[entry] = len(dictionary)
+    return dictionary
 
 class Data(Dataset):
     def __init__(self, X, y, transform=None):
