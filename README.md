@@ -1,4 +1,4 @@
-The project contains two scripts used for training and experimentation; 
+The project contains two scripts used for training and experimentation:
 
 ### main.py [-h] [--resolution RESOLUTION] [--style STYLE] [--add_language ADD_LANGUAGE] [--hyper] [--cuda_device CUDA_DEVICE] directory language
       
@@ -32,12 +32,20 @@ main.py is the main scrip calling those modules. It contains an option to run a 
 
 experiments.py contains a list of experiments with different selections of languages, resolutions, styles for both the training/validation set and the training set, with the possibility to select different options for both. It iterates through the different experimental set-ups and writes precision, recall, F1, and accuracy values to the file experiments.txt.
 
-CNNClassifier.py contains a convolutional NN with the conv layer with 16, 32, and 64 channels each, followed by two fully connected layers with hidden size 64. No Dropout was included in the final version. Default weight initialisation. 
+CNNClassifier.py contains a convolutional NN with three conv layer with 16, 32, and 64 channels each, followed by a fully connected layer for classification with hidden size 64. No Dropout was included in the final version. Default weight initialisation. 
 
-Trainer.py contains the training and testing functions, a learnign rate scheduler, an early stopping monitor, and a method for hyperparameter optimization using optuna. Parameters after optimization on joint English and Thai datasets with normal style are: Optimizer = SGD, learning_rate = 0.0038, l1 = 0.0001, batch_size = 16.
+Trainer.py contains the training and testing functions, a learnign rate scheduler, an early stopping monitor, and a method for hyperparameter optimization using optuna. Parameters after optimization on joint English and Thai datasets with normal style are: Optimizer = SGD, learning_rate = 0.0038, l1 = 0.0001, batch_size = 16. 
+
+CustomDataClass.py contains the custom Dataset class and some helper functions to create the dataset. 
 
 ### Some observations from the experiments
 
-The results in the experiments.txt file are quite uniform, with no dramatic outliers. Accuracy is a little higher when training and test data align in style, and a little less when not (which is no surprise). Training on Thai and English jointly has no dramatic negative effect on performance. An interesting observation is that combining multiple styles improves overall performance (with an accuracy of 0.96 for Thai only including all styles). 
+The results in the experiments.txt file are quite uniform, with no dramatic outliers. 
+
+Accuracy is a little higher when training and test data align in style, and a little less when not (which is no surprise). The change in accuracy lies between 4 and 6 percent.  
+
+Training on Thai and English jointly has no dramatic negative effect on performance, with a change of only 2 percent from training on Thai only to training on English and Thai.
+
+An interesting observation is that combining multiple styles improves overall performance (with an accuracy of 0.96 for Thai only including all styles, which is the highest achieved accuracy over all). 
 
 Changes in style reduces performance by a small margin, esp. from bold to italic delivers the worst result with 0.86 accuracy. 
