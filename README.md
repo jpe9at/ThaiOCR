@@ -34,7 +34,7 @@ experiments.py contains a list of experiments with different selections of langu
 
 CNNClassifier.py contains a convolutional NN with three conv layer with 16, 32, and 64 channels each, followed by a fully connected layer for classification with hidden size 64. No Dropout was included in the final version. Default weight initialisation. 
 
-Trainer.py contains the training and testing functions, a learnign rate scheduler, an early stopping monitor, and a method for hyperparameter optimization using optuna. Parameters after optimization on joint English and Thai datasets with normal style are: Optimizer = SGD, learning_rate = 0.0038, l1 = 0.0001, batch_size = 16. 
+Trainer.py contains the training and testing functions, a learnign rate scheduler, an early stopping monitor, and a method for hyperparameter optimization using optuna. Parameters after optimization on joint English and Thai datasets with normal style are: Optimizer = SGD, learning_rate = 0.0038, l1 = 0.0001, batch_size = 16, hidden_size = 64.
 
 CustomDataClass.py contains the custom Dataset class and some helper functions to create the dataset. 
 
