@@ -65,9 +65,9 @@ class Trainer:
         train_loss = 0.0
         for x_batch, y_batch in self.train_dataloader:
             print('allocated_device')
-            print(self.model.device)
-            x_batch = x_batch.to(self.model.device)
-            y_batch = y_batch.to(self.model.device)
+            print(next(self.model.parameters()).device)
+            #x_batch = x_batch.to(self.model.device)
+            y_batch = y_batch.to(next(self.model.parameters()).device)
             output = self.model(x_batch)
             print(output.device)
             loss = self.model.loss(output, y_batch)
@@ -89,6 +89,7 @@ class Trainer:
         with torch.no_grad():
             for x_batch, y_batch in self.val_dataloader:
                 val_output = self.model(x_batch)
+                y_batch = y_batch.to(next(self.model.parameters()).device)
                 loss = self.model.loss(val_output, y_batch)
                 val_loss += loss.item() * x_batch.size(0) #why multiplication with 0?
             val_loss /= len(self.val_dataloader.dataset)
@@ -101,8 +102,7 @@ class Trainer:
         y = []
         with torch.no_grad():
             for X_batch,y_batch in self.test_dataloader:
-                X_batch = X_batch.to(model.device)
-                y_batch = y_batch.to(model.device)
+                y_batch = y_batch.to(next(self.model.parameters()).device)
                 y_hat = torch.argmax(model(X_batch), dim=1)  # Choose the class with highest logits
                 y_pred.append(y_hat)
                 y.append(y_batch)

@@ -43,8 +43,6 @@ class CNNThai(nn.Module):
         if param_initialisation is not None: 
             layer, init_method = param_initialisation 
             self.initialize_weights(layer, init_method)
-        #self.device = next(self.parameters()).device
-        #print("Current Device: " + str(self.device))
     
     def forward(self, x):
         # Forward pass through the convolutional layers
