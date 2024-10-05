@@ -75,6 +75,7 @@ if hyperparameter_optimization == True:
 
 else: 
     cnn_model = CNNThai(64, output_size=num_of_labels, optimizer = 'SGD', learning_rate = 0.003388, l2 = 0.0001).to(device)
+    print(next(cnn_model.parameters()).device)
     trainer = Trainer(max_epochs = 4, batch_size = 16)
     trainer.fit(cnn_model,train_data,val_data)
 
