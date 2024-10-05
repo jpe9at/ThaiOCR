@@ -1,4 +1,4 @@
-usage: main.py [-h] [--resolution RESOLUTION] [--style STYLE] [--add_language ADD_LANGUAGE] [--hyper] [--cuda_device CUDA_DEVICE] directory language
+### main.py [-h] [--resolution RESOLUTION] [--style STYLE] [--add_language ADD_LANGUAGE] [--hyper] [--cuda_device CUDA_DEVICE] directory language
       
 Parameter options: 
       
@@ -12,7 +12,7 @@ Parameter options:
                 
 If cuda_device is called, only the specified GPU will be visible to pytorch. 
                 
-usage: experiments.py [-h]  [--cuda_device CUDA_DEVICE] directory 
+### experiments.py [-h]  [--cuda_device CUDA_DEVICE] directory 
      
 Parameter options: 
       
@@ -21,6 +21,8 @@ Parameter options:
 --cuda_device: select GPU name
 
 If cuda_device is called, only the specified GPU will be visible to pytorch.
+
+### Description 
 
 The set up follows the dive into deep learning book https://d2l.ai/index.html. With a Data Module names CustomDataClass.py to create the training, validation, and test sets, a trainer module Trainer.py, and the convolutional Network CNNClassifier.py. 
 
