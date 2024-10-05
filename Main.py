@@ -6,6 +6,7 @@ import cv2
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 import torch
+
 from CNNclassifier import CNNThai
 from Trainer import Trainer
 from CustomDataClass import create_dataframe, create_label_dictionary, DataModule
@@ -35,8 +36,12 @@ parser.add_argument("--hyper", help="Use Hyperparameter optimization", action="s
 parser.add_argument('--cuda_device', type=int, default=0, help='Specify the CUDA device number (default: 0)')
 
 args = parser.parse_args()
-
+print('Selected device')
+print(args.cuda_device)
 os.environ['CUDA_VISIBLE_DEVICES'] = str(args.cuda_device)
+torch.cuda.get_device_name(torch.cuda.current_device())
+
+
 
 hyperparameter_optimization = args.hyper
 if hyperparameter_optimization == True:
@@ -89,8 +94,8 @@ if hyperparameter_optimization == True:
 
 else: 
     cnn_model = CNNThai(64, output_size=num_of_labels, optimizer = 'SGD', learning_rate = 0.003388, l2 = 0.0001).to(device)
-    print(next(cnn_model.parameters()).device)
-    trainer = Trainer(max_epochs = 4, batch_size = 16)
+    #print(next(cnn_model.parameters()).device)
+    trainer = Trainer(max_epochs = 40, batch_size = 16)
     trainer.fit(cnn_model,train_data,val_data)
 
 #Plot Progress report

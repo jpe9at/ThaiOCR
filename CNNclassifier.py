@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.init as init
+import torch.nn.functional as F
+
 
 class CNNThai(nn.Module):
     def __init__(self, hidden_size=64, output_size=3, optimizer='Adam', learning_rate=0.0001, loss_function='CEL', l1=0.0, l2=0.0, scheduler=None, param_initialisation=None):
@@ -74,6 +76,28 @@ class CNNThai(nn.Module):
         #x = self.log_softmax(x)
 
         return x
+
+    #this method takes a single image as input and returns either the predicted label or the probability distribution of  all labels. 
+    def predict(self, image, return_probabilities = False):
+
+        self.eval()
+        image = image.to(next(self.parameters()).device)
+
+        # Ensure input tensor is in the correct shape (batch_size=1, channels=1, height, width)
+        if len(image.shape) == 3:
+            input_tensor = input_tensor.unsqueeze(0)  # Add batch dimension
+
+        with torch.no_grad():
+            output = self.forward(input_tensor)
+        
+        if return_probabilities:
+            # Apply softmax to get probabilities
+            probabilities = F.softmax(output, dim=1)
+            return probabilities
+        
+        _, predicted_class = torch.max(output, dim=1)
+
+        return predicted_class.item()
 
     def get_optimizer(self, optimizer, learning_rate, l2):
         Optimizers = {
