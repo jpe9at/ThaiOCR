@@ -28,11 +28,11 @@ os.environ['CUDA_VISIBLE_DEVICES'] = str(args.cuda_device)
 
 Experiments =[[['Thai', 'normal', '200'],['Thai','normal','200']],
                 [['Thai', 'normal', '400'],['Thai','normal','200']],
-                [[['Thai', 'English'], 'normal', '200'],[['Thai', 'English'],'normal','200']]],
-                [['Thai', 'normal', '400'],['Thai','bold','400']],
+                [[['Thai', 'English'], 'normal', '200'],[['Thai', 'English'],'normal','200']],
+                [['Thai', 'normal', '400'],['Thai','bold','400']], 
                 [['Thai', 'bold', '200'],['Thai','normal','200']],
                 [['Thai', ['normal','bold','bold_italic','italic'], '200'],['Thai',['normal','bold','bold_italic','italic'],'200']],
-              [[['Thai', 'English'], ['normal','bold','bold_italic','italic'], '200'],[['Thai', 'English'],['normal','bold','bold_italic','italic'],'200']]]
+                [[['Thai', 'English'], ['normal','bold','bold_italic','italic'], '200'],[['Thai', 'English'],['normal','bold','bold_italic','italic'],'200']]]
 
 
 
@@ -118,9 +118,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #Write the results in a .txt. file
 ######################################################################
 
+total_exp = len(Experiments)
 exp_no = 1
 for experiment in Experiments: 
-    #print(experiment)
+    print(f'Experiment number: {exp_no}/{total_exp}')
     train_data, val_data, test_data, label_dictionary = get_datasets(experiment)
     num_of_labels = len(label_dictionary)
     cnn_model = CNNThai(64, num_of_labels, optimizer = 'SGD', learning_rate = 0.00338, l2 = 0.0001, scheduler = 'OnPlateau').to(device)
@@ -130,9 +131,9 @@ for experiment in Experiments:
     #plot_progress(trainer)
     #plt.show()
 
-    precision, recall, f1, accuracy, loss = trainer.test(cnn_model, test_data)
+    precision, recall, f1, accuracy = trainer.test(cnn_model, test_data)
     
-    print(exp_no)
+
     with open('experiments.txt', mode='a') as file:
         line = f"Experiment number: {exp_no}. "
         file.write(line)
@@ -159,8 +160,6 @@ for experiment in Experiments:
         line = f"F1 Score: {f1:.2f} "
         file.write(line)
         line = f"Accuracy: {accuracy:.2f} "
-        file.write(line)
-        line = f"Accuracy Manual: {loss:.2f} "
         file.write(line)
         file.write('\n\n')
     exp_no += 1

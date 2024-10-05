@@ -1,0 +1,18 @@
+Experiment number: 1. Training_Set: Thai ; normal ; 200 ; Testing_Set: Thai ; normal ; 200 ; 
+Precision: 0.85 Recall: 0.81 F1 Score: 0.79 Accuracy: 0.81 
+
+Experiment number: 2. Training_Set: Thai ; normal ; 400 ; Testing_Set: Thai ; normal ; 200 ; 
+Precision: 0.82 Recall: 0.79 F1 Score: 0.78 Accuracy: 0.80 
+
+Experiment number: 1. Training_Set: Thai ; normal ; 200 ; Testing_Set: Thai ; normal ; 200 ; 
+Precision: 0.81 Recall: 0.77 F1 Score: 0.75 Accuracy: 0.78 
+
+Experiment number: 2. Training_Set: Thai ; normal ; 400 ; Testing_Set: Thai ; normal ; 200 ; 
+Precision: 0.82 Recall: 0.80 F1 Score: 0.79 Accuracy: 0.81 
+
+Experiment number: 3. Training_Set: Thai, English ; normal ; 200 ; Testing_Set: Thai, English ; normal ; 200 ; 
+Precision: 0.82 Recall: 0.79 F1 Score: 0.77 Accuracy: 0.80 
+
+Experiment number: 4. Training_Set: Thai ; normal ; 400 ; Testing_Set: Thai ; bold ; 400 ; 
+Precision: 0.82 Recall: 0.76 F1 Score: 0.75 Accuracy: 0.78 
+

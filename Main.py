@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser(description="Iterate through a directory and li
 parser.add_argument("directory", type=str, help="Path to the directory")
 parser.add_argument("language", type=str, help="Determine Langauge")
 parser.add_argument("--resolution", type=str, default = '200', help="Set resolution")
-parser.add_argument("---style", type=str, default = 'normal', help="Set style")
+parser.add_argument("--style", type=str, default = 'normal', help="Set style")
 parser.add_argument("--add_language", type=str, help="Determine additional Langauge")
 parser.add_argument("--hyper", help="Use Hyperparameter optimization", action="store_true" )
 parser.add_argument('--cuda_device', type=int, default=0, help='Specify the CUDA device number (default: 0)')
@@ -73,7 +73,7 @@ if hyperparameter_optimization == True:
     trainer.fit(cnn_model, train_data, val_data)
 
 else: 
-    cnn_model = CNNThai(64, output_size=num_of_labels, optimizer = 'SGD', learning_rate = '0.003388', l2 = 0.0001).to(device)
+    cnn_model = CNNThai(64, output_size=num_of_labels, optimizer = 'SGD', learning_rate = 0.003388, l2 = 0.0001).to(device)
     trainer = Trainer(max_epochs = 4, batch_size = 16)
     trainer.fit(cnn_model,train_data,val_data)
 

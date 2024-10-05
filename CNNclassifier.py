@@ -37,16 +37,14 @@ class CNNThai(nn.Module):
         self.learning_rate = learning_rate
         self.l1_rate = l1
         self.l2_rate = l2
-        # interesting for the testing stuff later on. 
-        self.metric = self.get_metric()
-             
+
         self.scheduler = self.get_scheduler(scheduler, self.optimizer)
         
         if param_initialisation is not None: 
             layer, init_method = param_initialisation 
             self.initialize_weights(layer, init_method)
         self.device = next(self.parameters()).device
-        print(self.device)
+        print("Current Device: " + str(self.device))
     
     def forward(self, x):
         # Forward pass through the convolutional layers
@@ -70,6 +68,7 @@ class CNNThai(nn.Module):
         x = self.fc1(x)
         x = self.relu4(x)
         x = self.fc2(x)
+        #Since CEL expects logits we won't apply the softmax here.
         #x = self.log_softmax(x)
 
         return x
@@ -89,12 +88,8 @@ class CNNThai(nn.Module):
     def get_loss(self, loss_function):
         Loss_Functions = {
             'CEL': nn.CrossEntropyLoss(), 
-            'MSE': nn.MSELoss()
         }
         return Loss_Functions[loss_function]
-
-    def get_metric(self):
-        return torch.nn.L1Loss()
     
     def get_scheduler(self, scheduler, optimizer):
         if scheduler is None:
